@@ -6,7 +6,15 @@ console.log("Logs from your program will appear here!");
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
   socket.on("data", (data) => {
-    socket.write("HTTP/1.1 200 OK\r\n\r\n")
+    const dataString = data.toString();
+    const [startLine] = dataString.trim().split("\r\n");
+
+    if(startLine.split(" ").includes("/")) {
+      socket.write("HTTP/1.1 200 OK\r\n\r\n")
+    } else {
+      socket.write("HTTP/1.1 404 Not Found\r\n\r\n")
+    }
+
     socket.end();
   });
   socket.on("close", () => {
