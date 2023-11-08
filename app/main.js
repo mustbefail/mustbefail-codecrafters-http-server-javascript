@@ -8,8 +8,9 @@ const server = net.createServer((socket) => {
   socket.on("data", (data) => {
     const dataString = data.toString();
     const [startLine] = dataString.trim().split("\r\n");
+    const [method, path, version] = startLine.split(" ");
 
-    if(startLine.split(" ").includes("/")) {
+    if(path === "/") {
       socket.write("HTTP/1.1 200 OK\r\n\r\n")
     } else {
       socket.write("HTTP/1.1 404 Not Found\r\n\r\n")
