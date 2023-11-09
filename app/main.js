@@ -11,8 +11,8 @@ const server = net.createServer((socket) => {
     const headers = dataString.trim().split('\r\n')
     const protocol = headers.find((header) => header.includes('HTTP'))
     const userAgent = headers.find((header) => header.includes('User-Agent'))
-    const [method, path, version] = protocol.split(' ')
-    const resPath = path.match(pattern)?.[1]
+    const [method, path, version] = protocol?.split(' ')
+    const resPath = path?.match(pattern)?.[1]
 
     if(path === '/') {
       socket.write(`HTTP/1.1 200 OK\r\n\r\n`)
@@ -34,7 +34,7 @@ const server = net.createServer((socket) => {
   })
   socket.on('close', () => {
     socket.end()
-    server.close()
+    // server.close()
   })
 })
 
