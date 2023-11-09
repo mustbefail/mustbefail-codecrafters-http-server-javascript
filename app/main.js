@@ -13,7 +13,7 @@ const server = net.createServer((socket) => {
     const res = path.match(pattern)?.[1];
 
     if(path === '/') {
-      socket.write(`HTTP/1.1 200 OK\r\n`);
+      socket.write(`HTTP/1.1 200 OK\r\n\r\n`);
       socket.end();
     }
 
