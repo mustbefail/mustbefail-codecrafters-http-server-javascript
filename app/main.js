@@ -51,11 +51,9 @@ const fileHandler = (req, socket) => {
   try {
     const filePath = resolve(`${DIR}/${fileName}`)
     const content = readFileSync(filePath, {encoding: 'utf8'})
-    console.log(content)
     const response = `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${content.length}\r\n\r\n${content}\r\n\r\n`
     socket.write(response)
   } catch (e) {
-    console.error(e)
     errorHandler(req, socket)
   }
 
