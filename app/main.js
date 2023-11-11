@@ -1,12 +1,13 @@
 const net = require('net')
 const { resolve } = require('path')
 const fs = require('fs')
+const { getExecArgs } = require('./utils')
 
+const DIRECTORY = getExecArgs()['--directory']
 
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log('Logs from your program will appear here!')
 
-const DIR = process.argv[process.argv.length - 1]
 
 const getParams = (reqPath) => {
   const [path, ...params] = reqPath.split('/').filter(Boolean)
@@ -18,7 +19,6 @@ const getParams = (reqPath) => {
   }
 
   return { path }
-
 }
 
 const parseHttpRequest = (data) => {
@@ -49,7 +49,7 @@ const readFileHandler = (req, socket) => {
   const {readFileSync} = fs
 
   try {
-    const filePath = resolve(`${DIR}/${fileName}`)
+    const filePath = resolve(`${DIRECTORY}/${fileName}`)
     const content = readFileSync(filePath, {encoding: 'utf8'})
     const response = `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${content.length}\r\n\r\n${content}\r\n\r\n`
     socket.write(response)
@@ -65,7 +65,7 @@ const writeFileHandler = (req, socket) => {
   const {writeFileSync} = fs
 
   try {
-    const filePath = resolve(`${DIR}/${fileName}`)
+    const filePath = resolve(`${DIRECTORY}/${fileName}`)
     writeFileSync(filePath, data, {encoding: 'utf8'})
     const response = `HTTP/1.1 201 OK\r\n\r\n`
     socket.write(response)
@@ -133,7 +133,6 @@ const server = net.createServer((socket) => {
 
   socket.on('close', () => {
     socket.end()
-    // server.close()
   })
 })
 
