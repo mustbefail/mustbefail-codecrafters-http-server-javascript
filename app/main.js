@@ -28,6 +28,7 @@ const parseHttpRequest = (data) => {
   const headers = {
     host: lines?.[0]?.split(' ')[1],
     userAgent: userAgent?.split(' ')[1],
+    body: lines?.[lines.length - 1]?.trimEnd()
   }
   const req = {
     method,
@@ -43,17 +44,32 @@ const errorHandler = (req, socket) => {
   socket.write(`HTTP/1.1 404 Not Found\r\n\r\n`)
 }
 
-const fileHandler = (req, socket) => {
+const readFileHandler = (req, socket) => {
   const fileName = req.params.id
   const {readFileSync} = fs
-
 
   try {
     const filePath = resolve(`${DIR}/${fileName}`)
     const content = readFileSync(filePath, {encoding: 'utf8'})
     const response = `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${content.length}\r\n\r\n${content}\r\n\r\n`
     socket.write(response)
-  } catch (e) {
+  } catch (_) {
+    errorHandler(req, socket)
+  }
+
+}
+
+const writeFileHandler = (req, socket) => {
+  const fileName = req.params.id
+  const data = req.headers.body
+  const {writeFileSync} = fs
+
+  try {
+    const filePath = resolve(`${DIR}/${fileName}`)
+    writeFileSync(filePath, data, {encoding: 'utf8'})
+    const response = `HTTP/1.1 201 OK\r\n\r\n`
+    socket.write(response)
+  } catch (_) {
     errorHandler(req, socket)
   }
 
@@ -80,7 +96,8 @@ const routes = {
     },
   },
   '/files/:id': {
-    GET: fileHandler,
+    GET: readFileHandler,
+    POST: writeFileHandler,
   },
 }
 
